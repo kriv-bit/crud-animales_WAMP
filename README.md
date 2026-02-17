@@ -1,4 +1,4 @@
-# 🐾 CRUD de Animales
+# 🐾 CRUD BASICO de Animales
 
 Proyecto realizado en clase de **Modelos de Computación** donde desarrollamos rápidamente un CRUD básico usando **PHP y MySQL**, ejecutado en un entorno local con **WAMP/LAMPP en Linux**.
 
@@ -28,7 +28,7 @@ La aplicación permite gestionar un registro de animales (crear, listar, editar 
 
 ---
 
-## 🧠 Lo que practicamos en clase
+## 🧠 Lo que practicamos
 
 - Cómo funciona un CRUD
 - Conexión a base de datos con PDO
@@ -40,7 +40,7 @@ La aplicación permite gestionar un registro de animales (crear, listar, editar 
 
 ---
 
-## 📁 Estructura del proyecto
+## 📁 Estructura
 
 config/  
 &nbsp;&nbsp;&nbsp;&nbsp;db.php  
@@ -84,4 +84,4 @@ Este proyecto fue desarrollado como práctica académica para entender el flujo 
 
 ---
 
-👨‍💻 Proyecto hecho en clase.
+👨‍💻 Hecho en clase.
