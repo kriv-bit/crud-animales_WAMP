@@ -5,7 +5,7 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="w2th=device-width, initial-scale=1">
   <title>Gestión de Animales</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
@@ -390,7 +390,6 @@
   // -------- Modales ----------
   async function openView(id) {
     try {
-      // si quieres siempre fresco, puedes descomentar esto:
       // const a = await apiGet(`${API_URL}?action=obtener&id=${encodeURIComponent(id)}`);
       const a = findById(id) || await apiGet(`${API_URL}?action=obtener&id=${encodeURIComponent(id)}`);
 
