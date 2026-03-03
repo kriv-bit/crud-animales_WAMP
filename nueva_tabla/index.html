@@ -1,249 +1,356 @@
 <!doctype html>
 <html lang="es">
+
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="w2th=device-width, initial-scale=1">
+
+  <!--
+    Viewport corregido: "width" (antes estaba mal escrito).
+    Esto es importante para que Bootstrap/AdminLTE funcionen bien en móviles.
+  -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <title>Gestión de Animales</title>
+
+  <!-- Favicon (ícono de pestaña) -->
   <link rel="icon" href="favicon.ico">
-    <!-- Bootstrap -->
+
+  <!-- Bootstrap (estilos base) -->
   <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
 
-  <!-- FontAwesome -->
+  <!-- FontAwesome (iconos para AdminLTE) -->
   <link rel="stylesheet" href="assets/adminlte/plugins/fontawesome/all.min.css">
 
-  <!-- AdminLTE -->
+  <!-- AdminLTE (layout: sidebar, navbar, content-wrapper) -->
   <link rel="stylesheet" href="assets/adminlte/css/adminlte.min.css">
 </head>
 
+<!--
+  AdminLTE requiere estas clases en <body> para activar el layout.
+-->
+
 <body class="hold-transition sidebar-mini">
-<div class="wrapper">
-<!-- Navbar AdminLTE -->
-<nav class="main-header navbar navbar-expand navbar-white navbar-light">
-  <ul class="navbar-nav">
-    <li class="nav-item">
-      <a class="nav-link" data-widget="pushmenu" href="#">
-        <i class="fas fa-bars"></i>
-      </a>
-    </li>
-    <li class="nav-item">
-      <span class="nav-link">Gestión de Animales</span>
-    </li>
-  </ul>
-</nav>
+  <div class="wrapper">
 
-<!-- Sidebar -->
-<aside class="main-sidebar sidebar-dark-primary elevation-4">
-  <a href="#" class="brand-link">
-    <span class="brand-text font-weight-light">Mi Panel</span>
-  </a>
-
-  <div class="sidebar">
-    <nav class="mt-2">
-      <ul class="nav nav-pills nav-sidebar flex-column">
+    <!-- Navbar AdminLTE -->
+    <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+      <ul class="navbar-nav">
         <li class="nav-item">
-          <a href="/nueva_tabla" class="nav-link active">
-            <i class="nav-icon fas fa-paw"></i>
-            <p>Animales</p>
+          <!-- data-widget="pushmenu" permite colapsar/expandir el sidebar -->
+          <a class="nav-link" data-widget="pushmenu" href="#" role="button" aria-label="Alternar menú">
+            <i class="fas fa-bars"></i>
           </a>
-          <a href="/especies" class="nav-link ">
-            <i class="nav-icon fas fa-paw"></i>
-            <p>Especies</p>
-          </a>
+        </li>
+        <li class="nav-item">
+          <span class="nav-link">Gestión de Animales</span>
         </li>
       </ul>
     </nav>
-  </div>
-</aside>
 
-<!-- Content -->
-  <div class="content-wrapper">
-    <section class="content pt-3">
-      <div class="container-fluid">
-        <div id="alertBox" class="mb-3"></div>
+    <!-- Sidebar -->
+    <aside class="main-sidebar sidebar-dark-primary elevation-4">
+      <a href="/nueva_tabla/index.html" class="brand-link">
+        <span class="brand-text font-weight-light">Mi Panel</span>
+      </a>
 
-        <div class="card shadow-sm">
-          <div class="card-body">
-            <div class="d-flex flex-column flex-md-row gap-2 align-items-md-center justify-content-between">
-              <div class="flex-grow-1">
-                <label class="form-label mb-1">Buscar</label>
-                <input id="searchInput" type="text" class="form-control"
-                      placeholder="Filtra por nombre, especie, fecha (YYYY-MM-DD) o edad (calculada)">
+      <div class="sidebar">
+        <nav class="mt-2">
+          <!--
+          Nota importante de AdminLTE:
+          Cada enlace del menú debe estar dentro de su propio <li>.
+          No deben colocarse dos <a> dentro del mismo <li>.
+        -->
+          <ul class="nav nav-pills nav-sidebar flex-column" role="menu">
+            <li class="nav-item">
+              <a href="/nueva_tabla/index.html" class="nav-link active">
+                <i class="nav-icon fas fa-paw"></i>
+                <p>Animales</p>
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <!-- Ajuste de ruta: debe apuntar dentro del proyecto -->
+              <a href="/nueva_tabla/especies.html" class="nav-link">
+                <i class="nav-icon fas fa-dog"></i>
+                <p>Especies</p>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </aside>
+
+    <!-- Content (zona central del layout AdminLTE) -->
+    <div class="content-wrapper">
+      <section class="content pt-3">
+        <div class="container-fluid">
+
+          <!-- Contenedor de alertas dinámicas (Bootstrap) -->
+          <div id="alertBox" class="mb-3"></div>
+
+          <div class="card shadow-sm">
+            <div class="card-body">
+
+              <div class="d-flex flex-column flex-md-row gap-2 align-items-md-center justify-content-between">
+                <div class="flex-grow-1">
+                  <label class="form-label mb-1">Buscar</label>
+                  <input id="searchInput" type="text" class="form-control"
+                    placeholder="Filtra por nombre, especie (nombre), fecha (YYYY-MM-DD) o edad (calculada)">
+                </div>
+
+                <div class="mt-2 mt-md-4">
+                  <!-- Botón abre el modal Agregar -->
+                  <button id="btnOpenAdd" class="btn btn-primary">+ Agregar Animal</button>
+                </div>
               </div>
 
-              <div class="mt-2 mt-md-4">
-                <button id="btnOpenAdd" class="btn btn-primary">+ Agregar Animal</button>
+              <hr class="my-4">
+
+              <!-- Tabla -->
+              <div class="table-responsive">
+                <table class="table table-striped align-middle mb-0">
+                  <thead class="table-dark">
+                    <tr>
+                      <th style="width:90px;">No.</th>
+                      <th>Nombre</th>
+                      <th>Especie</th>
+                      <th style="width:170px;">Fecha Nacimiento</th>
+                      <th style="width:110px;">Edad</th>
+                      <th style="width:260px;">Acciones</th>
+                    </tr>
+                  </thead>
+
+                  <!--
+                  Este <tbody> lo rellena el JavaScript (assets/script.js)
+                  con los datos que devuelve la API.
+                -->
+                  <tbody id="animalsBody">
+                    <tr>
+                      <td colspan="6" class="text-center text-muted py-4">Cargando...</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
+
             </div>
-
-            <hr class="my-4">
-
-            <div class="table-responsive">
-              <table class="table table-striped align-middle mb-0">
-                <thead class="table-dark">
-                  <tr>
-                    <th style="width:90px;">No.</th>
-                    <th>Nombre</th>
-                    <th>Especie</th>
-                    <th style="width:170px;">Fecha Nacimiento</th>
-                    <th style="width:110px;">Edad</th>
-                    <th style="width:260px;">Acciones</th>
-                  </tr>
-                </thead>
-                <tbody id="animalsBody">
-                  <tr>
-                    <td colspan="6" class="text-center text-muted py-4">Cargando...</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
           </div>
+
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
+
+  </div><!-- /.wrapper -->
+
+  <!--
+  A partir de aquí se encuentran los modales.
+  Están fuera del "content-wrapper" y pueden mantenerse así sin problema.
+-->
+
+  <!-- Modal Agregar -->
+  <div class="modal fade" id="addModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <form id="addForm" class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Agregar Animal</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+
+        <div class="modal-body">
+
+          <div class="mb-3">
+            <label class="form-label">Nombre</label>
+            <input type="text" class="form-control" id="a_nombre" maxlength="100" required>
+            <div class="invalid-feedback">Nombre requerido (máx 100).</div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Especie</label>
+
+            <!--
+            Cambio clave por el nuevo modelo de BD:
+            - Antes: animales.especie (texto)
+            - Ahora: animales.especie_id (FK a especies.id)
+
+            Por lo tanto, el formulario debe enviar "especie_id" (entero),
+            y para eso se usa un <select>.
+
+            El JavaScript debe:
+            1) Cargar el catálogo llamando a: api/algo.php?action=listar_especies
+            2) Rellenar este select con <option value="id">nombre</option>
+            3) Enviar en el payload: { especie_id: <valor> }
+          -->
+            <select class="form-select" id="a_especie_id" required>
+              <option value="" selected>Seleccione una especie</option>
+              <!-- Opciones dinámicas cargadas por JavaScript -->
+            </select>
+
+            <div class="invalid-feedback">Seleccione una especie válida.</div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Fecha de Nacimiento</label>
+            <input type="date" class="form-control" id="a_fechanacimiento" required>
+            <div class="invalid-feedback">Fecha inválida (no futura).</div>
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="btnAddSave">Guardar</button>
+        </div>
+      </form>
+    </div>
   </div>
-</div>
-<!-- Modal Agregar -->
-<div class="modal fade" id="addModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog">
-    <form id="addForm" class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Agregar Animal</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-      </div>
 
-      <div class="modal-body">
-        <div class="mb-3">
-          <label class="form-label">Nombre</label>
-          <input type="text" class="form-control" id="a_nombre" maxlength="100" required>
-          <div class="invalid-feedback">Nombre requerido (máx 100).</div>
+  <!-- Modal Ver -->
+  <div class="modal fade" id="viewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+
+        <div class="modal-header">
+          <h5 class="modal-title">Detalle del Animal</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
         </div>
 
-        <div class="mb-3">
-          <label class="form-label">Especie</label>
-          <input type="text" class="form-control" id="a_especie" maxlength="100" required>
-          <div class="invalid-feedback">Especie requerida (máx 100).</div>
+        <div class="modal-body">
+          <!--
+          Este modal muestra:
+          - id real del animal
+          - nombre
+          - especie (nombre) proveniente del JOIN en la API
+          - fecha nacimiento
+          - edad calculada en cliente
+        -->
+          <dl class="row mb-0">
+            <dt class="col-5">ID real</dt>
+            <dd class="col-7" id="v_id"></dd>
+            <dt class="col-5">Nombre</dt>
+            <dd class="col-7" id="v_nombre"></dd>
+            <dt class="col-5">Especie</dt>
+            <dd class="col-7" id="v_especie"></dd>
+            <dt class="col-5">Fecha Nacimiento</dt>
+            <dd class="col-7" id="v_fn"></dd>
+            <dt class="col-5">Edad (calculada)</dt>
+            <dd class="col-7" id="v_edad"></dd>
+          </dl>
         </div>
 
-        <div class="mb-3">
-          <label class="form-label">Fecha de Nacimiento</label>
-          <input type="date" class="form-control" id="a_fechanacimiento" required>
-          <div class="invalid-feedback">Fecha inválida (no futura).</div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
         </div>
-      </div>
 
-      <div class="modal-footer">
-        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button type="submit" class="btn btn-primary" id="btnAddSave">Guardar</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<!-- Modal Ver -->
-<div class="modal fade" id="viewModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Detalle del Animal</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-      </div>
-      <div class="modal-body">
-        <dl class="row mb-0">
-          <dt class="col-5">ID real</dt><dd class="col-7" id="v_id"></dd>
-          <dt class="col-5">Nombre</dt><dd class="col-7" id="v_nombre"></dd>
-          <dt class="col-5">Especie</dt><dd class="col-7" id="v_especie"></dd>
-          <dt class="col-5">Fecha Nacimiento</dt><dd class="col-7" id="v_fn"></dd>
-          <dt class="col-5">Edad (calculada)</dt><dd class="col-7" id="v_edad"></dd>
-        </dl>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
       </div>
     </div>
   </div>
-</div>
 
-<!-- Modal Editar -->
-<div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog">
-    <form id="editForm" class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Editar Animal</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-      </div>
+  <!-- Modal Editar -->
+  <div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <form id="editForm" class="modal-content">
 
-      <div class="modal-body">
-        <input type="hidden" id="e_id">
-
-        <div class="mb-2 small text-muted">
-          ID real: <span class="fw-semibold" id="e_id_text"></span>
+        <div class="modal-header">
+          <h5 class="modal-title">Editar Animal</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
         </div>
 
-        <div class="mb-3">
-          <label class="form-label">Nombre</label>
-          <input type="text" class="form-control" id="e_nombre" maxlength="100" required>
-          <div class="invalid-feedback">Nombre requerido (máx 100).</div>
+        <div class="modal-body">
+          <!-- ID real del animal (se usa para editar en la API) -->
+          <input type="hidden" id="e_id">
+
+          <div class="mb-2 small text-muted">
+            ID real: <span class="fw-semibold" id="e_id_text"></span>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Nombre</label>
+            <input type="text" class="form-control" id="e_nombre" maxlength="100" required>
+            <div class="invalid-feedback">Nombre requerido (máx 100).</div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Especie</label>
+
+            <!--
+            Mismo cambio que en "Agregar":
+            En edición se debe actualizar "especie_id" (FK).
+            El JavaScript debe:
+            - Cargar el catálogo de especies
+            - Marcar como seleccionado el especie_id actual del animal
+          -->
+            <select class="form-select" id="e_especie_id" required>
+              <option value="" selected>Seleccione una especie</option>
+              <!-- Opciones dinámicas cargadas por JavaScript -->
+            </select>
+
+            <div class="invalid-feedback">Seleccione una especie válida.</div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Fecha de Nacimiento</label>
+            <input type="date" class="form-control" id="e_fechanacimiento" required>
+            <div class="invalid-feedback">Fecha inválida (no futura).</div>
+          </div>
+
+          <div class="small text-muted">
+            Edad calculada: <span class="fw-semibold" id="e_edad_calc"></span>
+          </div>
         </div>
 
-        <div class="mb-3">
-          <label class="form-label">Especie</label>
-          <input type="text" class="form-control" id="e_especie" maxlength="100" required>
-          <div class="invalid-feedback">Especie requerida (máx 100).</div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-warning" id="btnEditSave">Guardar cambios</button>
         </div>
 
-        <div class="mb-3">
-          <label class="form-label">Fecha de Nacimiento</label>
-          <input type="date" class="form-control" id="e_fechanacimiento" required>
-          <div class="invalid-feedback">Fecha inválida (no futura).</div>
-        </div>
-
-        <div class="small text-muted">
-          Edad calculada: <span class="fw-semibold" id="e_edad_calc"></span>
-        </div>
-      </div>
-
-      <div class="modal-footer">
-        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button type="submit" class="btn btn-warning" id="btnEditSave">Guardar cambios</button>
-      </div>
-    </form>
+      </form>
+    </div>
   </div>
-</div>
 
-<!-- Modal Eliminar -->
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog">
-    <form id="deleteForm" class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title text-danger">Eliminar Animal</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-      </div>
+  <!-- Modal Eliminar -->
+  <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <form id="deleteForm" class="modal-content">
 
-      <div class="modal-body">
-        <input type="hidden" id="d_id">
-        <p class="mb-2">¿Seguro que quieres eliminar este animal?</p>
-        <ul class="mb-0">
-          <li><span class="text-muted">ID real:</span> <span class="fw-semibold" id="d_id_text"></span></li>
-          <li><span class="text-muted">Nombre:</span> <span class="fw-semibold" id="d_nombre"></span></li>
-          <li><span class="text-muted">Especie:</span> <span class="fw-semibold" id="d_especie"></span></li>
-        </ul>
-      </div>
+        <div class="modal-header">
+          <h5 class="modal-title text-danger">Eliminar Animal</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
 
-      <div class="modal-footer">
-        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button type="submit" class="btn btn-danger" id="btnDeleteConfirm">Sí, eliminar</button>
-      </div>
-    </form>
+        <div class="modal-body">
+          <input type="hidden" id="d_id">
+
+          <p class="mb-2">¿Seguro que quieres eliminar este animal?</p>
+
+          <ul class="mb-0">
+            <li><span class="text-muted">ID real:</span> <span class="fw-semibold" id="d_id_text"></span></li>
+            <li><span class="text-muted">Nombre:</span> <span class="fw-semibold" id="d_nombre"></span></li>
+            <li><span class="text-muted">Especie:</span> <span class="fw-semibold" id="d_especie"></span></li>
+          </ul>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-danger" id="btnDeleteConfirm">Sí, eliminar</button>
+        </div>
+
+      </form>
+    </div>
   </div>
-</div>
-<script src="assets/adminlte/plugins/jquery/jquery.min.js"></script>
-<script src="assets/bootstrap/js/bootstrap.bundle.min.js"></script>
 
-<script src="assets/adminlte/js/adminlte.min.js"></script>
-<script src="/nueva_tabla/assets/script.js"></script>
+  <!--
+  Orden de scripts (importante):
+  1) jQuery (requerido por AdminLTE 3)
+  2) Bootstrap Bundle (incluye Popper; requerido por modales)
+  3) AdminLTE (layout y widgets)
+  4) Script de la aplicación (debe ir al final)
+-->
+  <script src="assets/adminlte/plugins/jquery/jquery.min.js"></script>
+  <script src="assets/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/adminlte/js/adminlte.min.js"></script>
 
-
+  <!-- Script de la aplicación (CRUD) -->
+  <script src="assets/script.js"></script>
 
 </body>
+
 </html>
