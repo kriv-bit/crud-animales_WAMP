@@ -1,225 +1,33 @@
-<?php
-// index.php
-?>
-<!doctype html>
-<html lang="es">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="w2th=device-width, initial-scale=1">
-  <title>Gestión de Animales</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-
-<body class="bg-light">
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <div class="container">
-    <span class="navbar-brand fw-semibold">Gestión de Animales</span>
-  </div>
-</nav>
-
-<main class="container py-4">
-  <div id="alertBox" class="mb-3"></div>
-
-  <div class="card shadow-sm">
-    <div class="card-body">
-      <div class="d-flex flex-column flex-md-row gap-2 align-items-md-center justify-content-between">
-        <div class="flex-grow-1">
-          <label class="form-label mb-1">Buscar</label>
-          <input id="searchInput" type="text" class="form-control"
-                 placeholder="Filtra por nombre, especie, fecha (YYYY-MM-DD) o edad (calculada)">
-          <div class="form-text">Filtrado en cliente (sin pedir a la API).</div>
-        </div>
-
-        <div class="mt-2 mt-md-4">
-          <button id="btnOpenAdd" class="btn btn-primary">+ Agregar Animal</button>
-        </div>
-      </div>
-
-      <hr class="my-4">
-
-      <div class="table-responsive">
-        <table class="table table-striped align-middle mb-0">
-          <thead class="table-dark">
-            <tr>
-              <th style="width:90px;">No.</th>
-              <th>Nombre</th>
-              <th>Especie</th>
-              <th style="width:170px;">Fecha Nacimiento</th>
-              <th style="width:110px;">Edad</th>
-              <th style="width:260px;">Acciones</th>
-            </tr>
-          </thead>
-          <tbody id="animalsBody">
-            <tr>
-              <td colspan="6" class="text-center text-muted py-4">Cargando...</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-    </div>
-  </div>
-</main>
-
-<!-- Modal Agregar -->
-<div class="modal fade" id="addModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog">
-    <form id="addForm" class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Agregar Animal</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-      </div>
-
-      <div class="modal-body">
-        <div class="mb-3">
-          <label class="form-label">Nombre</label>
-          <input type="text" class="form-control" id="a_nombre" maxlength="100" required>
-          <div class="invalid-feedback">Nombre requerido (máx 100).</div>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label">Especie</label>
-          <input type="text" class="form-control" id="a_especie" maxlength="100" required>
-          <div class="invalid-feedback">Especie requerida (máx 100).</div>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label">Fecha de Nacimiento</label>
-          <input type="date" class="form-control" id="a_fechanacimiento" required>
-          <div class="invalid-feedback">Fecha inválida (no futura).</div>
-        </div>
-      </div>
-
-      <div class="modal-footer">
-        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button type="submit" class="btn btn-primary" id="btnAddSave">Guardar</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<!-- Modal Ver -->
-<div class="modal fade" id="viewModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Detalle del Animal</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-      </div>
-      <div class="modal-body">
-        <dl class="row mb-0">
-          <dt class="col-5">ID real</dt><dd class="col-7" id="v_id"></dd>
-          <dt class="col-5">Nombre</dt><dd class="col-7" id="v_nombre"></dd>
-          <dt class="col-5">Especie</dt><dd class="col-7" id="v_especie"></dd>
-          <dt class="col-5">Fecha Nacimiento</dt><dd class="col-7" id="v_fn"></dd>
-          <dt class="col-5">Edad (calculada)</dt><dd class="col-7" id="v_edad"></dd>
-        </dl>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Modal Editar -->
-<div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog">
-    <form id="editForm" class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Editar Animal</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-      </div>
-
-      <div class="modal-body">
-        <input type="hidden" id="e_id">
-
-        <div class="mb-2 small text-muted">
-          ID real: <span class="fw-semibold" id="e_id_text"></span>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label">Nombre</label>
-          <input type="text" class="form-control" id="e_nombre" maxlength="100" required>
-          <div class="invalid-feedback">Nombre requerido (máx 100).</div>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label">Especie</label>
-          <input type="text" class="form-control" id="e_especie" maxlength="100" required>
-          <div class="invalid-feedback">Especie requerida (máx 100).</div>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label">Fecha de Nacimiento</label>
-          <input type="date" class="form-control" id="e_fechanacimiento" required>
-          <div class="invalid-feedback">Fecha inválida (no futura).</div>
-        </div>
-
-        <div class="small text-muted">
-          Edad calculada: <span class="fw-semibold" id="e_edad_calc"></span>
-        </div>
-      </div>
-
-      <div class="modal-footer">
-        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button type="submit" class="btn btn-warning" id="btnEditSave">Guardar cambios</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<!-- Modal Eliminar -->
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog">
-    <form id="deleteForm" class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title text-danger">Eliminar Animal</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-      </div>
-
-      <div class="modal-body">
-        <input type="hidden" id="d_id">
-        <p class="mb-2">¿Seguro que quieres eliminar este animal?</p>
-        <ul class="mb-0">
-          <li><span class="text-muted">ID real:</span> <span class="fw-semibold" id="d_id_text"></span></li>
-          <li><span class="text-muted">Nombre:</span> <span class="fw-semibold" id="d_nombre"></span></li>
-          <li><span class="text-muted">Especie:</span> <span class="fw-semibold" id="d_especie"></span></li>
-        </ul>
-      </div>
-
-      <div class="modal-footer">
-        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button type="submit" class="btn btn-danger" id="btnDeleteConfirm">Sí, eliminar</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-<script>
 (() => {
+  // URL de tu API (backend PHP) que responde JSON
   const API_URL = 'api/algo.php';
 
-  let animals = [];   // data completa (con id real)
-  let filtered = [];  // data filtrada
+  // Arreglo principal con TODOS los animales (incluye el id real de la BD)
+  let animals = [];
 
-  const tbody = document.getElementById('animalsBody');
-  const searchInput = document.getElementById('searchInput');
-  const alertBox = document.getElementById('alertBox');
+  // Arreglo que se muestra en pantalla (puede ser filtrado por el buscador)
+  let filtered = [];
 
+  // Referencias a elementos del DOM (HTML)
+  const tbody = document.getElementById('animalsBody');   // <tbody> donde se pintan filas
+  const searchInput = document.getElementById('searchInput'); // input de búsqueda
+  const alertBox = document.getElementById('alertBox');   // contenedor de alertas
+
+  // Instancias de los modales de Bootstrap (para abrir/cerrar)
   const addModal = new bootstrap.Modal(document.getElementById('addModal'));
   const viewModal = new bootstrap.Modal(document.getElementById('viewModal'));
   const editModal = new bootstrap.Modal(document.getElementById('editModal'));
   const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
 
+  // Botón "Agregar Animal" y formularios de los modales
   const btnOpenAdd = document.getElementById('btnOpenAdd');
   const addForm = document.getElementById('addForm');
   const editForm = document.getElementById('editForm');
   const deleteForm = document.getElementById('deleteForm');
 
-  // -------- Helpers ----------
+  // -------- Helpers (funciones de apoyo) ----------
+
+  // Escapa texto para evitar que alguien meta HTML/JS y rompa la página (XSS)
   function escapeHtml(str) {
     return String(str)
       .replaceAll('&', '&amp;')
@@ -229,6 +37,7 @@
       .replaceAll("'", '&#039;');
   }
 
+  // Muestra una alerta Bootstrap arriba (success, danger, warning, etc.)
   function showAlert(message, type = 'success') {
     alertBox.innerHTML = `
       <div class="alert alert-${type} alert-dismissible fade show" role="alert">
@@ -238,6 +47,7 @@
     `;
   }
 
+  // Devuelve la fecha de hoy en formato YYYY-MM-DD (para usar en input type="date")
   function todayYmd() {
     const d = new Date();
     const y = d.getFullYear();
@@ -246,80 +56,108 @@
     return `${y}-${m}-${day}`;
   }
 
+  // Calcula edad (años) a partir de fechanacimiento "YYYY-MM-DD"
+  // Ojo: edad NO está guardada en BD, se calcula en el navegador.
   function calcEdad(fechaYmd) {
+    // Valida formato básico
     if (!fechaYmd || !/^\d{4}-\d{2}-\d{2}$/.test(fechaYmd)) return '';
+
+    // Convierte string a números
     const [y, m, d] = fechaYmd.split('-').map(Number);
+
+    // Crea fecha de nacimiento
     const born = new Date(y, m - 1, d);
     if (isNaN(born.getTime())) return '';
 
+    // Calcula diferencia de años y ajusta si aún no ha cumplido este año
     const today = new Date();
     let age = today.getFullYear() - born.getFullYear();
     const mm = today.getMonth() - born.getMonth();
     if (mm < 0 || (mm === 0 && today.getDate() < born.getDate())) age--;
+
+    // Si por alguna razón queda negativa (fecha futura), devuelve vacío
     return (age < 0) ? '' : String(age);
   }
 
+  // Pone mensaje "Cargando..." en la tabla
   function setLoading() {
     tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-4">Cargando...</td></tr>`;
   }
 
+  // Pone mensaje "vacío" en la tabla con texto personalizado
   function setEmpty(msg = 'Sin resultados') {
     tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-4">${escapeHtml(msg)}</td></tr>`;
   }
 
+  // Busca un animal por id real dentro del array animals
   function findById(id) {
     return animals.find(a => String(a.id) === String(id)) || null;
   }
 
-  // -------- Render ----------
+  // -------- Render (pintar tabla) ----------
+
+  // Renderiza la tabla con la lista que le pases (filtered o animals)
   function renderTable(list) {
     tbody.innerHTML = '';
 
+    // Si no hay datos, muestra mensaje
     if (!Array.isArray(list) || list.length === 0) {
       setEmpty('No hay animales para mostrar');
       return;
     }
 
-    // No. = 1..N (sin mostrar id real)
+    // Recorre la lista y crea una fila por animal
+    // "No." es un número de fila (ID falso): 1..N, NO es el id real de la BD
     list.forEach((a, idx) => {
       const tr = document.createElement('tr');
 
+      // Columna No. (se recalcula cada vez que renderizas/filtras)
       const tdNo = document.createElement('td');
       tdNo.textContent = String(idx + 1);
 
+      // Nombre
       const tdNombre = document.createElement('td');
       tdNombre.textContent = a.nombre ?? '';
 
+      // Especie
       const tdEspecie = document.createElement('td');
       tdEspecie.textContent = a.especie ?? '';
 
+      // Fecha nacimiento
       const tdFN = document.createElement('td');
       tdFN.textContent = a.fechanacimiento ?? '';
 
+      // Edad calculada (no viene de la BD)
       const tdEdad = document.createElement('td');
       tdEdad.textContent = calcEdad(a.fechanacimiento);
 
+      // Acciones (botones)
       const tdAcc = document.createElement('td');
 
+      // Botón Ver → abre modal ver
       const btnVer = document.createElement('button');
       btnVer.className = 'btn btn-sm btn-outline-primary me-2';
       btnVer.textContent = 'Ver';
       btnVer.addEventListener('click', () => openView(a.id));
 
+      // Botón Editar → abre modal editar
       const btnEdit = document.createElement('button');
       btnEdit.className = 'btn btn-sm btn-outline-warning me-2';
       btnEdit.textContent = 'Editar';
       btnEdit.addEventListener('click', () => openEdit(a.id));
 
+      // Botón Eliminar → abre modal eliminar
       const btnDel = document.createElement('button');
       btnDel.className = 'btn btn-sm btn-outline-danger';
       btnDel.textContent = 'Eliminar';
       btnDel.addEventListener('click', () => openDelete(a.id));
 
+      // Se agregan botones a la celda de acciones
       tdAcc.appendChild(btnVer);
       tdAcc.appendChild(btnEdit);
       tdAcc.appendChild(btnDel);
 
+      // Se agregan celdas a la fila
       tr.appendChild(tdNo);
       tr.appendChild(tdNombre);
       tr.appendChild(tdEspecie);
@@ -327,18 +165,23 @@
       tr.appendChild(tdEdad);
       tr.appendChild(tdAcc);
 
+      // Se agrega fila al tbody
       tbody.appendChild(tr);
     });
   }
 
+  // Aplica filtro en cliente (sin pedir a la API)
   function applyFilter() {
     const q = (searchInput.value || '').trim().toLowerCase();
+
+    // Si no hay texto, se muestra todo
     if (!q) {
       filtered = [...animals];
       renderTable(filtered);
       return;
     }
 
+    // Filtra por nombre/especie/fecha/edad (edad calculada)
     filtered = animals.filter(a => {
       const nombre = String(a.nombre ?? '').toLowerCase();
       const especie = String(a.especie ?? '').toLowerCase();
@@ -348,38 +191,60 @@
       return nombre.includes(q) || especie.includes(q) || fn.includes(q) || edad.includes(q);
     });
 
+    // Si no hay coincidencias, muestra mensaje
     if (filtered.length === 0) {
       setEmpty('No hay coincidencias');
       return;
     }
+
+    // Renderiza con resultados filtrados
     renderTable(filtered);
   }
 
-  // -------- API calls ----------
+  // -------- API calls (comunicación con el backend) ----------
+
+  // GET para acciones que solo consultan (listar/obtener)
   async function apiGet(url) {
     const res = await fetch(url, { headers: { 'Accept': 'application/json' }});
     const json = await res.json();
+
+    // Si falla HTTP o la API responde ok:false → se lanza error
     if (!res.ok || !json.ok) throw new Error(json.message || 'Error');
+
+    // Devuelve solo la parte data
     return json.data;
   }
 
+  // POST para acciones que modifican (insertar/editar/eliminar)
   async function apiPost(action, payload) {
     const res = await fetch(`${API_URL}?action=${encodeURIComponent(action)}`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify(payload)
+      headers: {
+        'Content-Type': 'application/json', // el body va como JSON
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(payload) // convierte objeto JS a string JSON
     });
+
     const json = await res.json();
+
+    // Si falla HTTP o la API responde ok:false → error
     if (!res.ok || !json.ok) throw new Error(json.message || 'Error');
+
+    // Devuelve solo data (por ejemplo, el animal insertado/actualizado)
     return json.data;
   }
 
+  // Carga el listado desde la API y pinta la tabla
   async function listarAnimales() {
     try {
-      setLoading();
+      setLoading(); // muestra "Cargando..."
       const data = await apiGet(`${API_URL}?action=listar`);
+
+      // Asegura que sea array
       animals = Array.isArray(data) ? data : [];
       filtered = [...animals];
+
       renderTable(filtered);
     } catch (err) {
       setEmpty('Error cargando datos');
@@ -387,68 +252,88 @@
     }
   }
 
-  // -------- Modales ----------
+  // -------- Modales (abrir/ver/editar/eliminar) ----------
+
+  // Abre modal "Ver"
   async function openView(id) {
     try {
-      // const a = await apiGet(`${API_URL}?action=obtener&id=${encodeURIComponent(id)}`);
+      // Primero intenta obtenerlo desde memoria (animals)
+      // Si no está, entonces lo pide a la API con action=obtener
       const a = findById(id) || await apiGet(`${API_URL}?action=obtener&id=${encodeURIComponent(id)}`);
 
+      // Rellena campos del modal Ver
       document.getElementById('v_id').textContent = a.id ?? '';
       document.getElementById('v_nombre').textContent = a.nombre ?? '';
       document.getElementById('v_especie').textContent = a.especie ?? '';
       document.getElementById('v_fn').textContent = a.fechanacimiento ?? '';
-      document.getElementById('v_edad').textContent = calcEdad(a.fechanacimiento); // ✅ edad en ver
+      document.getElementById('v_edad').textContent = calcEdad(a.fechanacimiento); // edad calculada
 
+      // Muestra modal
       viewModal.show();
     } catch (err) {
       showAlert(err.message || 'Error abriendo detalle', 'danger');
     }
   }
 
+  // Abre modal "Editar"
   function openEdit(id) {
+    // Solo usa datos en memoria
     const a = findById(id);
+
+    // Si no existe en memoria, fuerza recarga
     if (!a) {
       showAlert('No se encontró el animal en memoria, recargando...', 'warning');
       listarAnimales();
       return;
     }
 
-    // set max date = hoy
+    // Evita escoger fecha futura (en input date)
     document.getElementById('e_fechanacimiento').max = todayYmd();
 
-    document.getElementById('e_id').value = a.id;
-    document.getElementById('e_id_text').textContent = a.id;
+    // Rellena formulario de edición
+    document.getElementById('e_id').value = a.id;              // hidden
+    document.getElementById('e_id_text').textContent = a.id;   // texto visible
     document.getElementById('e_nombre').value = a.nombre ?? '';
     document.getElementById('e_especie').value = a.especie ?? '';
     document.getElementById('e_fechanacimiento').value = a.fechanacimiento ?? '';
     document.getElementById('e_edad_calc').textContent = calcEdad(a.fechanacimiento);
 
-    // limpia invalids
+    // Quita estados "invalid" antiguos
     editForm.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
 
+    // Muestra modal editar
     editModal.show();
   }
 
+  // Abre modal "Eliminar"
   function openDelete(id) {
     const a = findById(id);
+
+    // Si no existe en memoria, recarga
     if (!a) {
       showAlert('No se encontró el animal en memoria, recargando...', 'warning');
       listarAnimales();
       return;
     }
 
+    // Rellena modal eliminar (hidden id + info)
     document.getElementById('d_id').value = a.id;
     document.getElementById('d_id_text').textContent = a.id;
     document.getElementById('d_nombre').textContent = a.nombre ?? '';
     document.getElementById('d_especie').textContent = a.especie ?? '';
 
+    // Muestra modal eliminar
     deleteModal.show();
   }
 
-  // -------- Validación ----------
-  function validateText(input, maxLen=100) {
+  // -------- Validación (cliente) ----------
+
+  // Valida texto requerido y largo máximo
+  function validateText(input, maxLen = 100) {
     input.classList.remove('is-invalid');
     const v = (input.value || '').trim();
+
+    // Si está vacío o se pasa de longitud → inválido
     if (!v || v.length > maxLen) {
       input.classList.add('is-invalid');
       return null;
@@ -456,136 +341,175 @@
     return v;
   }
 
+  // Valida que fecha exista y no sea futura
   function validateDate(input) {
     input.classList.remove('is-invalid');
     const v = input.value;
+
+    // Debe existir
     if (!v) {
       input.classList.add('is-invalid');
       return null;
     }
+
+    // Convierte a Date (00:00) y compara con hoy (00:00)
     const chosen = new Date(v + 'T00:00:00');
     const today = new Date();
     const today0 = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+    // Si es inválida o mayor que hoy → inválida
     if (isNaN(chosen.getTime()) || chosen > today0) {
       input.classList.add('is-invalid');
       return null;
     }
+
     return v;
   }
 
-  // -------- Eventos ----------
+  // -------- Eventos (listeners) ----------
+
+  // Cada vez que escribes en buscar → filtra en cliente
   searchInput.addEventListener('input', applyFilter);
 
+  // Click en "+ Agregar Animal" → abre modal agregar
   btnOpenAdd.addEventListener('click', () => {
-    addForm.reset();
+    addForm.reset(); // limpia el formulario
+
+    // Quita invalids anteriores
     addForm.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
 
+    // Limita fecha máxima a hoy
     document.getElementById('a_fechanacimiento').max = todayYmd();
 
+    // Abre modal
     addModal.show();
   });
 
+  // Submit del formulario Agregar
   addForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // evita recargar página
 
+    // Validación de inputs
     const nombre = validateText(document.getElementById('a_nombre'));
     const especie = validateText(document.getElementById('a_especie'));
     const fn = validateDate(document.getElementById('a_fechanacimiento'));
+
+    // Si algo falla, no envía
     if (!nombre || !especie || !fn) return;
 
+    // UI: deshabilitar botón mientras guarda
     const btn = document.getElementById('btnAddSave');
     btn.disabled = true;
     btn.textContent = 'Guardando...';
 
     try {
+      // Llama a la API para insertar
       const inserted = await apiPost('insertar', { nombre, especie, fechanacimiento: fn });
 
-      // Como listamos ORDER BY id DESC, lo metemos al inicio
+      // Como el listado viene DESC por id, lo ponemos al inicio del array
       animals.unshift(inserted);
 
+      // Cierra modal
       addModal.hide();
+
+      // Mensaje al usuario
       showAlert('Animal agregado ✅', 'success');
 
+      // Limpia búsqueda y repinta tabla completa
       searchInput.value = '';
       applyFilter();
     } catch (err) {
       showAlert(err.message || 'Error insertando', 'danger');
     } finally {
+      // UI: reactivar botón
       btn.disabled = false;
       btn.textContent = 'Guardar';
     }
   });
 
-  // edad dinámica en edit al cambiar fecha
+  // Cuando cambias la fecha en el modal Editar → recalcula edad en vivo
   document.getElementById('e_fechanacimiento').addEventListener('input', (e) => {
     document.getElementById('e_edad_calc').textContent = calcEdad(e.target.value);
   });
 
+  // Submit del formulario Editar
   editForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
+    // Toma id real oculto + valida campos
     const id = document.getElementById('e_id').value;
     const nombre = validateText(document.getElementById('e_nombre'));
     const especie = validateText(document.getElementById('e_especie'));
     const fn = validateDate(document.getElementById('e_fechanacimiento'));
+
+    // Si algo falla, no envía
     if (!id || !nombre || !especie || !fn) return;
 
+    // UI: botón en modo guardando
     const btn = document.getElementById('btnEditSave');
     btn.disabled = true;
     btn.textContent = 'Guardando...';
 
     try {
+      // Llama a la API para editar
       const updated = await apiPost('editar', { id, nombre, especie, fechanacimiento: fn });
 
-      // update local
+      // Actualiza el array animals reemplazando el registro editado
       animals = animals.map(a => String(a.id) === String(updated.id) ? updated : a);
 
+      // Cierra modal y alerta
       editModal.hide();
       showAlert('Animal editado ✅', 'success');
 
+      // Repinta respetando filtro actual
       applyFilter();
     } catch (err) {
       showAlert(err.message || 'Error editando', 'danger');
     } finally {
+      // UI: restaurar botón
       btn.disabled = false;
       btn.textContent = 'Guardar cambios';
     }
   });
 
+  // Submit del formulario Eliminar
   deleteForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
+    // Toma el id real oculto
     const id = document.getElementById('d_id').value;
     if (!id) return;
 
+    // UI: botón en modo eliminando
     const btn = document.getElementById('btnDeleteConfirm');
     btn.disabled = true;
     btn.textContent = 'Eliminando...';
 
     try {
+      // Llama a la API para eliminar
       await apiPost('eliminar', { id });
 
+      // Quita del array animals el que se eliminó
       animals = animals.filter(a => String(a.id) !== String(id));
 
+      // Cierra modal y alerta
       deleteModal.hide();
       showAlert('Animal eliminado ✅', 'success');
 
-      applyFilter(); // renumera el No. 1..N automáticamente
+      // Repinta y renumera la columna "No."
+      applyFilter();
     } catch (err) {
       showAlert(err.message || 'Error eliminando', 'danger');
     } finally {
+      // UI: restaurar botón
       btn.disabled = false;
       btn.textContent = 'Sí, eliminar';
     }
   });
 
-  // ✅ Cargar cuando todo está listo (readyState complete)
+  // Cuando el navegador termina de cargar todo → pide listado a la API
   window.addEventListener('load', () => {
     listarAnimales();
   });
 
-})();
-</script>
-
-</body>
-</html>
+})(); // fin de la IIFE: el código se ejecuta automáticamente y no deja variables globales
