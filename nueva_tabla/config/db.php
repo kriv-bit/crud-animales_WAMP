@@ -1,6 +1,8 @@
 <?php
+// -------------------------- SE USA EN WAMP ASI
+//const DB_HOST = '127.0.0.1'; 
 
-const DB_HOST = '127.0.0.1';
+const DB_HOST = 'db';
 const DB_NAME = "MCEJ1_BD"; //
 const DB_USER = "kevin";;
 const DB_PASS = '12345';
