@@ -1,0 +1,100 @@
+/*
+ * awwwards_animales.css
+ * Documentación de las modificaciones (Awwwards UI + Temática de Animales)
+ * 
+ * 1. Tensión Tipográfica: Agrandamos y estilizamos el nombre de la página 
+ *    para romper el esquema clásico de "SaaS UI". Usaremos una tipografía gruesa y apretada.
+ * 2. Formas Orgánicas (SVG): Agregamos un patrón de fondo con la forma de huellas de animal 
+ *    desestructuradas (SVG orgánico en base64) para romper el gris plano de la plantilla.
+ * 3. Neo-Brutalismo (Cartas y Botones): Anulamos los border-radius ("píldoras") 
+ *    y agregamos bordes negros gruesos con sombras en bloque (shadow-[8px_8px_0_#000]) 
+ *    al estilo "Streetwear" de Awwwards.
+ */
+
+/* 1. Tensión Tipográfica (Navbar) */
+.navbar-light .navbar-nav .nav-item .nav-link:not([data-widget="pushmenu"]) {
+    font-size: 2rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: -1.5px; /* tracking-tighter */
+    color: #111 !important;
+    line-height: 1;
+}
+
+/* Kicker industrial para la cabecera */
+.navbar-light .navbar-nav .nav-item:last-child {
+    position: relative;
+    margin-left: 10px;
+}
+.navbar-light .navbar-nav .nav-item:last-child::before {
+    content: "APP V1.0";
+    position: absolute;
+    top: -5px;
+    left: 8px;
+    font-size: 10px;
+    font-family: monospace;
+    font-weight: bold;
+    letter-spacing: 2px;
+    color: #FF5722;
+}
+
+/* 2. Fondo orgánico con temática animal (SVG de huellas asimétricas) */
+.content-wrapper {
+    background-color: #f7f3ec !important; /* Un tono crema cálido */
+    /* Huella / mancha orgánica SVG */
+    background-image: url("data:image/svg+xml,%3Csvg width='300' height='300' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30,50 C20,50 10,40 15,30 C20,20 30,25 35,35 C40,45 40,50 30,50 Z M60,45 C50,45 45,35 50,25 C55,15 65,15 70,25 C75,35 70,45 60,45 Z M45,85 C25,85 15,70 20,55 C25,40 65,40 70,55 C75,70 65,85 45,85 Z' fill='%23e0c097' opacity='0.2'/%3E%3C/svg%3E") !important;
+    background-size: 300px;
+    background-position: center;
+}
+
+/* 3. Neo-Brutalismo en la Tarjeta Principal */
+.content-wrapper .card {
+    border: 3px solid #000;
+    border-radius: 0 !important; /* Eliminamos los bordes redondeados estándar */
+    box-shadow: 6px 6px 0px #000 !important; /* Sombra sólida neo-brutalista */
+    background: #ffffff;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.content-wrapper .card:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 8px 8px 0px #000 !important;
+}
+
+/* 4. Botones asombrosos */
+.btn-primary {
+    background-color: #FF5722 !important; /* Naranja agresivo */
+    border: 2px solid #000 !important;
+    border-radius: 0 !important;
+    color: #000 !important;
+    font-weight: 800;
+    text-transform: uppercase;
+    box-shadow: 4px 4px 0px #000 !important;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.btn-primary:hover {
+    background-color: #E64A19 !important;
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0px #000 !important;
+}
+
+/* 5. Ajustes de la Tabla (Minimalismo "Crudo") */
+.table thead th {
+    background-color: #111 !important;
+    color: #FFF !important;
+    border: none;
+    text-transform: uppercase;
+    font-family: monospace;
+    font-size: 13px;
+    letter-spacing: 1px;
+}
+
+.table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+.table tbody tr:hover {
+    background-color: #fff1eb !important;
+}
